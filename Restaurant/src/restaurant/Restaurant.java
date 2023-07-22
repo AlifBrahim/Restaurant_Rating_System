@@ -41,8 +41,8 @@ public class Restaurant extends javax.swing.JPanel {
     public Restaurant() {
         initComponents();
         dataList = new ArrayList<>(); // Initialize the dataList
-        displayDataInTable();
-        populateRestaurantInfoTable();
+        displayDataInTable(); //display the database data in jtable1 ******line55
+        populateRestaurantInfoTable();// calculate the average rating data  *****line 97
     }
 
     private Connection getConnection() throws SQLException {
@@ -52,30 +52,31 @@ public class Restaurant extends javax.swing.JPanel {
         return DriverManager.getConnection(url, username, password);
     }
 
-    private void displayDataInTable() {
-    dataList.clear(); // Clear the existing data in the global dataList
+private void displayDataInTable() {
+dataList.clear(); // Clear the existing data in the list
 
-    try (Connection connection = getConnection();
-         Statement statement = connection.createStatement()) {
-        String query = "SELECT * FROM detail"; // Change the query according to your database schema
-        ResultSet resultSet = statement.executeQuery(query);
+try (Connection connection = getConnection(); // create the connection
+    Statement statement = connection.createStatement()) { // execute SQL queries on the database.
+    String query = "SELECT * FROM detail"; // retrieve all rows from the table named "detail.
+    ResultSet resultSet = statement.executeQuery(query); //data are stored in resultset
 
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-        model.setRowCount(0); // Clear any existing rows in the table
+    DefaultTableModel model = (DefaultTableModel) jTable1.getModel();// retrieves the DefaultTableModel associated with the jTable1
+    model.setRowCount(0); // Clear any existing rows in the table
 
-        // Use lambda expression to process the ResultSet and add data to the dataList
-        dataList = resultSetToArrayList(resultSet);
+    // convert the ResultSet into an ArrayList ***line 77
+    dataList = resultSetToArrayList(resultSet);
 
-        // Add the row data to the table model
-        dataList.forEach(model::addRow);
+    // Add the row data to the table model using lamda
+    dataList.forEach(model::addRow);
 
     } catch (SQLException e) {
         e.printStackTrace();
     }
 }
+       //create arraylist and will store the rows of data from the database
     private List<Object[]> resultSetToArrayList(ResultSet resultSet) throws SQLException {
     List<Object[]> dataList = new ArrayList<>();
-    while (resultSet.next()) {
+    while (resultSet.next()) {//If there is no next row, the loop will terminate.
         // Retrieve data from the result set
         int recordid = resultSet.getInt("recordid");
         String restaurantName = resultSet.getString("name");
@@ -90,32 +91,32 @@ public class Restaurant extends javax.swing.JPanel {
         // Add the row data to the global dataList
         dataList.add(rowData);
     }
-    return dataList;
+    return dataList; //return the dataList(contain all the rows of data from the database table)
 }
 
     private void populateRestaurantInfoTable() {
-        updateRestaurantInfoTable();
+        updateRestaurantInfoTable();// line321
     }
 
     private boolean validateFields() {
-        String restaurantName = jTextField1.getText().trim();
-        String location = jTextField2.getText().trim();
-        String cuisine = jTextField3.getText().trim();
-        String ratingStr = jTextField4.getText().trim();
-        String review = jTextField10.getText().trim();
+        String restaurantName = jTextField1.getText().trim();//Retrieve input data
+        String location = jTextField2.getText().trim();//Retrieve input data
+        String cuisine = jTextField3.getText().trim();//Retrieve input data
+        String ratingStr = jTextField4.getText().trim();//Retrieve input data
+        String review = jTextField10.getText().trim();//Retrieve input data
 
         if (restaurantName.isEmpty() || location.isEmpty() || cuisine.isEmpty() || ratingStr.isEmpty() || review.isEmpty()) {
             JOptionPane.showMessageDialog(this, "All fields are required.", "Input Error", JOptionPane.ERROR_MESSAGE);
-            return false;
+            return false;// check for empty fields and returns false to indicate that the input is not valid.
         }
 
         try {
-            int rating = Integer.parseInt(ratingStr);
-            if (rating < 1 || rating > 10) {
+            int rating = Integer.parseInt(ratingStr);//string to int
+            if (rating < 1 || rating > 10) {////if the int not between 1-10 it will return false
                 JOptionPane.showMessageDialog(this, "Rating must be between 1 and 10.", "Input Error", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException e) { // catch the non- numeric character
             JOptionPane.showMessageDialog(this, "Rating must be a valid number.", "Input Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
@@ -125,24 +126,24 @@ public class Restaurant extends javax.swing.JPanel {
     }
 
     private boolean validateFields2() {
-        String restaurantName = jTextField6.getText().trim();
-        String location = jTextField7.getText().trim();
-        String cuisine = jTextField8.getText().trim();
-        String ratingStr = jTextField9.getText().trim();
-        String review = jTextField11.getText().trim();
+        String restaurantName = jTextField6.getText().trim();//Retrieve input data
+        String location = jTextField7.getText().trim();//Retrieve input data
+        String cuisine = jTextField8.getText().trim();//Retrieve input data
+        String ratingStr = jTextField9.getText().trim();//Retrieve input data
+        String review = jTextField11.getText().trim();//Retrieve input data
 
         if (restaurantName.isEmpty() || location.isEmpty() || cuisine.isEmpty() || ratingStr.isEmpty() || review.isEmpty()) {
             JOptionPane.showMessageDialog(this, "All fields are required.", "Input Error", JOptionPane.ERROR_MESSAGE);
-            return false;
+            return false; //// check for empty fields and returns false to indicate that the input is not valid.
         }
 
         try {
-            int rating = Integer.parseInt(ratingStr);
-            if (rating < 1 || rating > 10) {
+            int rating = Integer.parseInt(ratingStr);//string to int
+            if (rating < 1 || rating > 10) {//if the int not between 1-10 it will return false
                 JOptionPane.showMessageDialog(this, "Rating must be between 1 and 10.", "Input Error", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {// catch the non- numeric character
             JOptionPane.showMessageDialog(this, "Rating must be a valid number.", "Input Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
@@ -152,36 +153,36 @@ public class Restaurant extends javax.swing.JPanel {
     }
 
     private void insertData(Connection connection, int restaurantId, String restaurantName, String location, String cuisine, int rating, String review) throws SQLException {
-        String query = "INSERT INTO detail (restaurantid, name, location, cuisine, rating, review) VALUES (?, ?, ?, ?, ?, ?)";
-        try ( PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, restaurantId);
+        String query = "INSERT INTO detail (restaurantid, name, location, cuisine, rating, review) VALUES (?, ?, ?, ?, ?, ?)";// prepares an SQL query string with placeholders using parameterized queries
+        try ( PreparedStatement preparedStatement = connection.prepareStatement(query)) {// This ensures that the resources are properly closed after they are used, even if an exception occurs
+            preparedStatement.setInt(1, restaurantId);//Sets the first placeholder to the value of the restaurantId variable (an integer).
             preparedStatement.setString(2, restaurantName);
             preparedStatement.setString(3, location);
             preparedStatement.setString(4, cuisine);
             preparedStatement.setInt(5, rating);
             preparedStatement.setString(6, review);
-            preparedStatement.executeUpdate();
+            preparedStatement.executeUpdate();//this will insert a new row with the provided data into the "detail" table in the database.
         }
     }
 
-    private int findLargestRestaurantId(Connection connection) throws SQLException {
-        String query = "SELECT MAX(restaurantid) AS max_id FROM detail";
-        try ( Statement statement = connection.createStatement()) {
-            ResultSet resultSet = statement.executeQuery(query);
+    private int findLargestRestaurantId(Connection connection) throws SQLException {// find the largest restaurant id from the database
+        String query = "SELECT MAX(restaurantid) AS max_id FROM detail";// to retrieve the maximum value of the "restaurantid" column from the "detail" table using the MAX() aggregate function.
+        try ( Statement statement = connection.createStatement()) {// execute the SQL query.
+            ResultSet resultSet = statement.executeQuery(query);//executes the SQL query and  stores the result in a ResultSet object 
             if (resultSet.next()) {
-                return resultSet.getInt("max_id");
+                return resultSet.getInt("max_id");// retrieves the value of the "max_id" column in database
             }
             return 0; // If no records found in the table, start with 0 as restaurantId
         }
     }
 
-    private int findExistingDetailId(Connection connection, String restaurantName) throws SQLException {
-        String query = "SELECT restaurantid FROM detail WHERE name = ?";
-        try ( PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, restaurantName);
-            ResultSet resultSet = preparedStatement.executeQuery();
+    private int findExistingDetailId(Connection connection, String restaurantName) throws SQLException {// find the existing restaurant id
+        String query = "SELECT restaurantid FROM detail WHERE name = ?"; // get the restaurant id from the database based on the restaurant name
+        try ( PreparedStatement preparedStatement = connection.prepareStatement(query)) {//The query string contains a placeholder for the restaurantName
+            preparedStatement.setString(1, restaurantName);//This binds the restaurantName value to the first (and only) placeholder in the SQL query.
+            ResultSet resultSet = preparedStatement.executeQuery();//executes and  stores the result in a ResultSet object.
             if (resultSet.next()) {
-                int restaurantId = resultSet.getInt("restaurantid");
+                int restaurantId = resultSet.getInt("restaurantid");//restaurant name is already present in the database table
                 resultSet.close(); // Close the ResultSet after retrieving the data
                 return restaurantId;
             }
@@ -206,23 +207,23 @@ public class Restaurant extends javax.swing.JPanel {
         jTextField11.setText("");
     }
 
-private void sortTableByColumn(JTable table, String sortBy) {
-    DefaultTableModel model = (DefaultTableModel) table.getModel();
-    TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);
-    table.setRowSorter(sorter);
+private void sortTableByColumn(JTable table, String sortBy) {// retrieves the DefaultTableModel associated with the JTable passed as an argument
+    DefaultTableModel model = (DefaultTableModel) table.getModel();//DefaultTableModel holds the data displayed in the JTable.
+    TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(model);//Create a TableRowSorte
+    table.setRowSorter(sorter);//Set the TableRowSorter to the JTable
 
-    int columnIndex = getColumnIndexByName(table, sortBy);
+    int columnIndex = getColumnIndexByName(table, sortBy);//Get the Column Index
     if (columnIndex == -1) {
         JOptionPane.showMessageDialog(this, "Invalid column name.", "Error", JOptionPane.ERROR_MESSAGE);
         return;
     }
 
-    List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+    List<RowSorter.SortKey> sortKeys = new ArrayList<>();//Create a List of Sort Keys:
     sortKeys.add(new RowSorter.SortKey(columnIndex, SortOrder.ASCENDING));
 
-    sorter.setComparator(columnIndex, (o1, o2) -> {
+    sorter.setComparator(columnIndex, (o1, o2) -> {// Set Custom Comparator for Sorting
         // Use lambda expression for sorting based on column data type
-        if (o1 instanceof String && o2 instanceof String) {
+        if (o1 instanceof String && o2 instanceof String) {// using lambda expression to handle different data types in the column. 
             return ((String) o1).compareToIgnoreCase((String) o2);
         } else if (o1 instanceof Integer && o2 instanceof Integer) {
             return Integer.compare((Integer) o1, (Integer) o2);
@@ -234,32 +235,32 @@ private void sortTableByColumn(JTable table, String sortBy) {
         return 0;
     });
 
-    sorter.setSortKeys(sortKeys);
-    sorter.sort();
+    sorter.setSortKeys(sortKeys);// keys are set on the TableRowSorter 
+    sorter.sort();// sorting is performed 
 }
    // Method to sort jTable2 by the selected column name
 private void sortTable2ByColumn(String columnName) {
-    TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>((DefaultTableModel) jTable2.getModel());
-    jTable2.setRowSorter(sorter);
+    TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>((DefaultTableModel) jTable2.getModel());//Create a TableRowSorter
+    jTable2.setRowSorter(sorter);//Set the TableRowSorter to jTable2
 
-    int columnIndex = getColumnIndexByName(jTable2, columnName);
-    if (columnIndex == -1) {
+    int columnIndex = getColumnIndexByName(jTable2, columnName);//Get the Column Index
+    if (columnIndex == -1) {// If the column name is not found, it displays an error message
         JOptionPane.showMessageDialog(this, "Invalid column name.", "Error", JOptionPane.ERROR_MESSAGE);
         return;
     }
 
-    List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-    sortKeys.add(new RowSorter.SortKey(columnIndex, SortOrder.ASCENDING));
+    List<RowSorter.SortKey> sortKeys = new ArrayList<>();//Create a List of Sort Keys
+    sortKeys.add(new RowSorter.SortKey(columnIndex, SortOrder.ASCENDING));//sorting based on the column index
 
-    sorter.setSortKeys(sortKeys);
-    sorter.sort();
+    sorter.setSortKeys(sortKeys);// keys are set on the TableRowSorter 
+    sorter.sort();// sorting is performed 
 }
 
     // Method to get the column index by column name
 private int getColumnIndexByName(JTable table, String columnName) {
-    for (int i = 0; i < table.getColumnCount(); i++) {
-        if (table.getColumnName(i).equalsIgnoreCase(columnName)) {
-            return i;
+    for (int i = 0; i < table.getColumnCount(); i++) {//Loop through the Table Columns
+        if (table.getColumnName(i).equalsIgnoreCase(columnName)) {//Check for Matching Column Name
+            return i;// If a matching column name is found
         }
     }
     return -1; // Column with the given name not found
@@ -268,7 +269,7 @@ private int getColumnIndexByName(JTable table, String columnName) {
     // Helper method to check if a string is a valid integer
     private boolean isInteger(String str) {
         try {
-            Integer.parseInt(str);
+            Integer.parseInt(str);//Integer Parsing Attempt
             return true;
         } catch (NumberFormatException e) {
             return false;
@@ -278,9 +279,10 @@ private int getColumnIndexByName(JTable table, String columnName) {
     private void updateDataListFromDatabase() {
         dataList.clear(); // Clear the existing data in the list
 
-        try ( Connection connection = getConnection()) {
-            String query = "SELECT * FROM detail";
-            try ( PreparedStatement statement = connection.prepareStatement(query);  ResultSet resultSet = statement.executeQuery()) {
+        try ( Connection connection = getConnection()) {//Establish Database Connection
+            String query = "SELECT * FROM detail";// select all columns from the database
+            try ( PreparedStatement statement = connection.prepareStatement(query);  
+                    ResultSet resultSet = statement.executeQuery()) {//Process the Result Set
                 while (resultSet.next()) {
                     int recordid = resultSet.getInt("recordid");
                     String restaurantName = resultSet.getString("name");
@@ -288,8 +290,8 @@ private int getColumnIndexByName(JTable table, String columnName) {
                     String cuisine = resultSet.getString("cuisine");
                     int rating = resultSet.getInt("rating");
                     String review = resultSet.getString("review");
-                    Object[] rowData = {recordid, restaurantName, location, cuisine, rating, review};
-                    dataList.add(rowData);
+                    Object[] rowData = {recordid, restaurantName, location, cuisine, rating, review};//Create Row Data Array
+                    dataList.add(rowData);//Add Row Data to dataList
                 }
             }
         } catch (SQLException e) {
@@ -299,17 +301,17 @@ private int getColumnIndexByName(JTable table, String columnName) {
 
     private void updateDataInDatabase(int recordId, String restaurantName, String location, String cuisine, int rating, String review) {
         try {
-            String query = "UPDATE detail SET Name=?, Location=?, Cuisine=?, Rating=?, Review=? WHERE recordid=?";
-            Connection conn = getConnection();
-            PreparedStatement pst = conn.prepareStatement(query);
-            pst.setString(1, restaurantName);
+            String query = "UPDATE detail SET Name=?, Location=?, Cuisine=?, Rating=?, Review=? WHERE recordid=?";//SQL Update Query
+            Connection conn = getConnection();//Get Database Connection
+            PreparedStatement pst = conn.prepareStatement(query);//Prepare and Execute Update
+            pst.setString(1, restaurantName);//Setting Parameters
             pst.setString(2, location);
             pst.setString(3, cuisine);
             pst.setInt(4, rating);
             pst.setString(5, review);
             pst.setInt(6, recordId);
 
-            pst.executeUpdate();
+            pst.executeUpdate();//update the specified row with the new values provided.
             pst.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -317,32 +319,32 @@ private int getColumnIndexByName(JTable table, String columnName) {
     }
 
    private void updateRestaurantInfoTable() {
-    DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
+    DefaultTableModel model = (DefaultTableModel) jTable2.getModel();//Get the DefaultTableModel
     model.setRowCount(0); // Clear any existing rows in the table
 
-    try (Connection connection = getConnection(); Statement statement = connection.createStatement()) {
-        String query = "SELECT restaurantid, name, rating FROM detail"; // Specify only the necessary columns
+    try (Connection connection = getConnection(); Statement statement = connection.createStatement()) {//Establish Database Connection
+        String query = "SELECT restaurantid, name, rating FROM detail"; // Prepare and Execute Query
         ResultSet resultSet = statement.executeQuery(query);
-
+        
         Map<String, List<Integer>> restaurantRatingsMap = new HashMap<>(); // Map to store restaurant ratings (restaurant name as key)
 
-        while (resultSet.next()) {
+        while (resultSet.next()) {//it retrieves the data for each row
             int restaurantId = resultSet.getInt("restaurantid");
             String restaurantName = resultSet.getString("name");
             int rating = resultSet.getInt("rating");
 
-            // Use lambda expression to update the ratings for each restaurant in the map
+            // Use lambda expression to update the ratings for each restaurant in the map and to group ratings by restaurant names
             restaurantRatingsMap.computeIfAbsent(restaurantName, k -> new ArrayList<>()).add(rating);
         }
-
+        // For each entry, it calculates the review count and average rating
         for (Map.Entry<String, List<Integer>> entry : restaurantRatingsMap.entrySet()) {
             String restaurantName = entry.getKey();
             List<Integer> ratings = entry.getValue();
 
             int reviewCount = ratings.size();
             double averageRating = ratings.stream().mapToDouble(Integer::doubleValue).average().orElse(0.0);
-
-            Object[] rowData = {findExistingDetailId(connection, restaurantName), restaurantName, reviewCount, averageRating};
+            //Add Summarized Data to jTable2
+            Object[] rowData = {findExistingDetailId(connection, restaurantName), restaurantName, reviewCount, averageRating};  // line 179
             model.addRow(rowData);
         }
 
@@ -354,9 +356,10 @@ private int getColumnIndexByName(JTable table, String columnName) {
 
 
     private void deleteDataFromDatabase(int recordId) {
-        try ( Connection conn = getConnection();  PreparedStatement pst = conn.prepareStatement("DELETE FROM detail WHERE recordid = ?")) {
-            pst.setInt(1, recordId);
-            pst.executeUpdate();
+        try ( Connection conn = getConnection();  
+                PreparedStatement pst = conn.prepareStatement("DELETE FROM detail WHERE recordid = ?")) {//Prepare and Execute DELETE Query
+            pst.setInt(1, recordId);//his binds the recordId value to the first 
+            pst.executeUpdate();// delete the row in the "detail" table where the recordId matches the provided value.
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -748,7 +751,7 @@ private int getColumnIndexByName(JTable table, String columnName) {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        if (validateFields()) {
+        if (validateFields()) {// line101
             String restaurantName = jTextField1.getText().trim();
             String location = jTextField2.getText().trim();
             String cuisine = jTextField3.getText().trim();
@@ -756,24 +759,24 @@ private int getColumnIndexByName(JTable table, String columnName) {
             String review = jTextField10.getText().trim();
 
             try ( Connection connection = getConnection()) {
-                int existingRestaurantId = findExistingDetailId(connection, restaurantName);
+                int existingRestaurantId = findExistingDetailId(connection, restaurantName); //  line 179
 
                 if (existingRestaurantId != -1) {
                     // Restaurant name already exists, use the existing restaurantId
-                    insertData(connection, existingRestaurantId, restaurantName, location, cuisine, rating, review);
+                    insertData(connection, existingRestaurantId, restaurantName, location, cuisine, rating, review); // line155
                 } else {
                     int largestRestaurantId = findLargestRestaurantId(connection);
                     int newRestaurantId = largestRestaurantId + 1;
-                    insertData(connection, newRestaurantId, restaurantName, location, cuisine, rating, review);
+                    insertData(connection, newRestaurantId, restaurantName, location, cuisine, rating, review);// line155
                 }
 
                 // After inserting the data, update the dataList with the new record
-                updateDataListFromDatabase();
+                updateDataListFromDatabase(); //line 279
 
                 // Display the updated data in the table
-                displayDataInTable();
-                populateRestaurantInfoTable();
-                resetFields();
+                displayDataInTable(); //line 55
+                populateRestaurantInfoTable(); // line 97
+                resetFields();//line 194
             } catch (SQLException e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(this, "Error occurred while saving data.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -818,7 +821,7 @@ private int getColumnIndexByName(JTable table, String columnName) {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        resetFields();
+        resetFields();// line 194
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -829,7 +832,7 @@ private int getColumnIndexByName(JTable table, String columnName) {
             return;
         }
 
-        if (!validateFields2()) {
+        if (!validateFields2()) { // line 128
             return; // Validation failed, do not proceed with the update
         }
 
@@ -851,10 +854,10 @@ private int getColumnIndexByName(JTable table, String columnName) {
         String recordIdStr = jTable1.getValueAt(selectedRowIndex, 0).toString(); // Get the recordId as a String from the selected row
         int recordId = Integer.parseInt(recordIdStr); // Parse the recordId String to an int
 
-        updateDataInDatabase(recordId, restaurantName, location, cuisine, rating, review);
+        updateDataInDatabase(recordId, restaurantName, location, cuisine, rating, review); //line 302
 
         // Refresh the dataList with the latest data from the database
-        updateDataListFromDatabase();
+        updateDataListFromDatabase(); // line 279
 
         // Update jTable1 with the latest data
         DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
@@ -864,11 +867,11 @@ private int getColumnIndexByName(JTable table, String columnName) {
             model.addRow(rowData);
         }
 
-        // Refresh jTable2 with the latest restaurant information
-        updateRestaurantInfoTable();
+        // Refresh jTable2 with the latest restaurant information//line321
+        updateRestaurantInfoTable(); //line 321
 
         // Clear the input fields
-        resetFields2();
+        resetFields2(); //line 202
 
         // Show a success message
         JOptionPane.showMessageDialog(this, "Data updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -894,15 +897,15 @@ private int getColumnIndexByName(JTable table, String columnName) {
             deleteDataFromDatabase(recordId);
 
             // Refresh jTable1 with the latest data
-            updateDataListFromDatabase();
+            updateDataListFromDatabase(); //line 279
             DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
             model.setRowCount(0); // Clear any existing rows in the table
             for (Object[] rowData : dataList) {
                 model.addRow(rowData);
             }
 
-            // Refresh jTable2 with the latest restaurant information
-            updateRestaurantInfoTable();
+            // Refresh jTable2 with the latest restaurant information *** line 321
+            updateRestaurantInfoTable(); //line 321
 
             // Show a success message
             JOptionPane.showMessageDialog(this, "Data deleted successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -910,7 +913,7 @@ private int getColumnIndexByName(JTable table, String columnName) {
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        resetFields2();
+        resetFields2();// line202
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
@@ -934,7 +937,7 @@ private int getColumnIndexByName(JTable table, String columnName) {
         }
 
         // Sort the table based on the selected item
-        sortTableByColumn(jTable1, selectedSortBy);
+        sortTableByColumn(jTable1, selectedSortBy); // line 210
     }
             }
         });
@@ -990,7 +993,7 @@ private int getColumnIndexByName(JTable table, String columnName) {
                     }
 
                     // Sort jTable2 based on the selected item
-                    sortTable2ByColumn(selectedSortBy);
+                    sortTable2ByColumn(selectedSortBy); //line 242
                 } else {
 
                 }
